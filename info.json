@@ -1,0 +1,11 @@
+{
+    "name": "SupplyDrop",
+    "version": "0.1.0",
+    "title": "Supply Drop",
+    "author": "Gangsir",
+    "contact": "The best way to reach me is to PM me on Reddit, at /u/Gangsir.",
+    "homepage": "",
+    "factorio_version": "0.14",
+    "dependencies": ["base >= 0.14"],
+    "description": "You aren't alone on Nauvis. Someone, something out there wants you to succeed and get off the planet. You've been noticing strange crates that don't look like they're from this planet landing nearby occasionally. They seem to contain supplies for you. You don't know who's sending them, but whoever they are, they're certainly helpful."
+}

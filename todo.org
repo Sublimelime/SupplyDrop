@@ -1,0 +1,9 @@
+Todo for supply drop
+
+* DONE Randomize lore sentences
+* DONE Build tables of possibilities
+* TODO Make entity look unique
+* TODO Create particle effect of grenade landing
+
+
+* TODO Release the mod

@@ -18,7 +18,7 @@ local DISTANCE_TO_CRATE = 30 --default 30
 
 ----------------
 
-local RANDOM_TIME = 3000 --this variable is used to pick a random time to drop a supply chest. The first chest should arrive after about 5 mins.
+local RANDOM_TIME = 2000 --this variable is used to pick a random time to drop a supply chest. The first chest should arrive after about 5 mins.
 --18000
 
 script.on_event({defines.events.on_tick},
@@ -40,23 +40,24 @@ script.on_event({defines.events.on_tick},
          repeat  --ensure it can find a place
             local randomPosX = math.random(randomPlayer.position.x-DISTANCE_TO_CRATE,randomPlayer.position.x+DISTANCE_TO_CRATE)
             local randomPosY = math.random(randomPlayer.position.y-DISTANCE_TO_CRATE,randomPlayer.position.y+DISTANCE_TO_CRATE)
-            --place the chest. This is an assembling machine because I needed a 3x3 entity to make it easier to find.
-            chestPos = game.surfaces[1].find_non_colliding_position("assembling-machine-1",{x=randomPosX,y=randomPosY}, 0, 3)
+            --Find a place for the chest
+            chestPos = game.surfaces[1].find_non_colliding_position("supply-chest",{x=randomPosX,y=randomPosY}, 0, 3)
          until chestPos
 
          --game.print("Chest spawned at " .. chestPos.x .. "," .. chestPos.y)
 
          game.surfaces[1].create_entity{name="big-explosion",position=chestPos,force="neutral"} --create an explosion to simulate a landing
+         --create the chest
          local chestEntity = game.surfaces[1].create_entity{name="supply-chest",position=chestPos,force="neutral"}
-         if chestEntity then
 
+         if chestEntity then
             --fill chest with randomly selected items based on game stage
             if not randomPlayer.force.technologies["steel-processing"].researched then
                --stage one, has not researched steel
                for i=1,ITEMS_PER_CHEST do --insert items from the stage one pool
                   chestEntity.insert(stageOne())
                end
-            elseif randomPlayer.force.technologies["steel-processing"].researched and not randomPlayer.force.technologies["oil-processing"].researched  then
+            elseif randomPlayer.force.technologies["steel-processing"].researched and not randomPlayer.force.technologies["rocketry"].researched  then
 
                --stage two, will have researched steel, but not rocketry
                for i=1,ITEMS_PER_CHEST do --insert items from the stage two pool

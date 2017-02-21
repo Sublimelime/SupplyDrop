@@ -14,7 +14,7 @@ local TIME_BETWEEN_DROP_MIN = 10 --default 10
 local TIME_BETWEEN_DROP_MAX = 30 --default 30
 
 -- Change this to change how far away at max distance from the selected player the crate is allowed to drop.
-local DISTANCE_TO_CRATE = 50 --default 50
+local DISTANCE_TO_CRATE = 30 --default 30
 
 ----------------
 

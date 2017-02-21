@@ -42,6 +42,8 @@ function stageTwo()
       {name="transport-belt",count=math.random(100,200)},
       {name="underground-belt",count=6},
       {name="rail",count=math.random(50,150)},
+      {name="red-wire",count=math.random(50,150)},
+      {name="green-wire",count=math.random(10,50)},
 
 
    }

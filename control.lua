@@ -47,6 +47,9 @@ script.on_event({defines.events.on_tick},
          --game.print("Chest spawned at " .. chestPos.x .. "," .. chestPos.y)
 
          game.surfaces[1].create_entity{name="big-explosion",position=chestPos,force="neutral"} --create an explosion to simulate a landing
+         --spawn supply fire
+         game.surfaces[1].create_entity{name="supply-fire",position=chestPos,force="neutral"}
+
          --create the chest
          local chestEntity = game.surfaces[1].create_entity{name="supply-chest",position=chestPos,force="neutral"}
 

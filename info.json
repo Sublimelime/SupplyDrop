@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "title": "Supply Drop",
     "author": "Gangsir",
-    "contact": "The best way to reach me is to PM me on Reddit, at /u/Gangsir.",
+    "contact": "The best way to reach me is to PM me on Reddit, at /u/Gangsir. If you need to submit an issue with the mod, please do so on the github repository.",
     "homepage": "",
     "factorio_version": "0.14",
     "dependencies": ["base >= 0.14"],

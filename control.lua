@@ -6,7 +6,7 @@ require("stages.endgame")
 
 --- USER CONFIG
 
--- Change this to change how many rolls the loot generator makes per chest.
+-- Change this to change how many rolls the loot generator makes per chest, aka how many unique items.
 local ITEMS_PER_CHEST = 5 --default 5
 
 -- Change these two variables to change how much time between each crate in minutes.
@@ -18,16 +18,17 @@ local DISTANCE_TO_CRATE = 30 --default 30
 
 ----------------
 
-local RANDOM_TIME = 2000 --this variable is used to pick a random time to drop a supply chest. The first chest should arrive after about 5 mins.
---18000
+--this variable is used to pick a random time to drop a supply chest, and is recalculated with each drop.
+local RANDOM_TIME = (TIME_BETWEEN_DROP_MAX+TIME_BETWEEN_DROP_MIN)/2*math.pow(60,2)
+
 
 script.on_event({defines.events.on_tick},
    function(e)
       if e.tick%RANDOM_TIME == 0 and e.tick ~= 0 then --run very infreqently, only when tick is evenly divisible by RANDOM_TIME
 
-         --RANDOM_TIME = math.random(TIME_BETWEEN_DROP_MIN*60*60,TIME_BETWEEN_DROP_MAX*60*60)
+         RANDOM_TIME = math.random(TIME_BETWEEN_DROP_MIN*math.pow(60,2),TIME_BETWEEN_DROP_MAX*math.pow(60,2))
 
-         --count number of players on server
+         --count number of players on server, suprised there's no native way to know this
          local numOfPlayers = 1
          while game.players[numOfPlayers+1] ~= nil do
             numOfPlayers = numOfPlayers+1
@@ -54,28 +55,58 @@ script.on_event({defines.events.on_tick},
          local chestEntity = game.surfaces[1].create_entity{name="supply-chest",position=chestPos,force="neutral"}
 
          if chestEntity then
+            local counter = 0
+            local itemToInsert = nil
+
             --fill chest with randomly selected items based on game stage
-            if not randomPlayer.force.technologies["steel-processing"].researched then
-               --stage one, has not researched steel
-               for i=1,ITEMS_PER_CHEST do --insert items from the stage one pool
-                  chestEntity.insert(stageOne())
+            if not randomPlayer.force.technologies["oil-processing"].researched then
+               --stage one, has not researched oil
+               counter = 0 --used for while loop below, because you can't modify a for loop's control var in lua
+               local itemToInsert = nil --used for testing duplication and adding to chest.
+               while counter < ITEMS_PER_CHEST do --insert items from the stage one pool
+                  itemToInsert = stageOne()
+                  if chestEntity.get_item_count(itemToInsert.name) == 0 then --avoid duplication
+                     --game.print("Duplicate found of " .. itemToInsert.name)
+                     chestEntity.insert(itemToInsert)
+                     counter = counter+1
+                  end
                end
-            elseif randomPlayer.force.technologies["steel-processing"].researched and not randomPlayer.force.technologies["rocketry"].researched  then
+            elseif randomPlayer.force.technologies["oil-processing"].researched and not randomPlayer.force.technologies["advanced-oil-processing"].researched  then
 
-               --stage two, will have researched steel, but not rocketry
-               for i=1,ITEMS_PER_CHEST do --insert items from the stage two pool
-                  chestEntity.insert(stageTwo())
+               --stage two, will have researched oil, but not advanced oil processing
+               counter = 0 --used for while loop below, because you can't modify a for loop's control var in lua
+               itemToInsert = nil --used for testing duplication and adding to chest.
+               while counter < ITEMS_PER_CHEST do --insert items from the stage one pool
+                  itemToInsert = stageTwo()
+                  if chestEntity.get_item_count(itemToInsert.name) == 0 then --avoid duplication
+                     --game.print("Duplicate found of " .. itemToInsert.name)
+                     chestEntity.insert(itemToInsert)
+                     counter = counter+1
+                  end
                end
-
-            elseif randomPlayer.force.technologies["rocketry"].researched and not randomPlayer.force.technologies["rocket-silo"].researched then
-               --stage three, will have researched rocketry, but not silo
-               for i=1,ITEMS_PER_CHEST do --insert items from the stage three pool
-                  chestEntity.insert(stageThree())
+            elseif randomPlayer.force.technologies["advanced-oil-processing"].researched and not randomPlayer.force.technologies["rocket-silo"].researched then
+               --stage three, will have researched advanced oil processing, but not silo
+               counter = 0 --used for while loop below, because you can't modify a for loop's control var in lua
+               itemToInsert = nil --used for testing duplication and adding to chest.
+               while counter < ITEMS_PER_CHEST do --insert items from the stage one pool
+                  itemToInsert = stageThree()
+                  if chestEntity.get_item_count(itemToInsert.name) == 0 then --avoid duplication
+                     --game.print("Duplicate found of " .. itemToInsert.name)
+                     chestEntity.insert(itemToInsert)
+                     counter = counter+1
+                  end
                end
             elseif randomPlayer.force.technologies["rocket-silo"].researched then
                --stage endgame, will have researched rocket silo
-               for i=1,ITEMS_PER_CHEST do --insert items from the endgame pool
-                  chestEntity.insert(endGame())
+               counter = 0 --used for while loop below, because you can't modify a for loop's control var in lua
+               itemToInsert = nil --used for testing duplication and adding to chest.
+               while counter < ITEMS_PER_CHEST do --insert items from the stage one pool
+                  itemToInsert = endGame()
+                  if chestEntity.get_item_count(itemToInsert.name) == 0 then --avoid duplication
+                     --game.print("Duplicate found of " .. itemToInsert.name)
+                     chestEntity.insert(itemToInsert)
+                     counter = counter+1
+                  end
                end
             end
          end
@@ -94,12 +125,13 @@ function randomLoreMessage()
       "The shrill protests of birds mark the arrival of something foreign.",
       "*Thud*",
       "A crate falls from above, smashing a tree.",
-      "You notice a box with a parachute floating down some distance away.",
+      "A blue crate impacts the ground near you. It looks like it nearly burned up on atmospheric entry.",
       "You notice something falling from the sky. It lands nearby.",
       "A strange box just hit the ground nearby.",
       "You see a crate drop from the sky. It hits the ground, throwing up dust.",
       "A crashing sound interrupts your train of thought.",
-      "You are jolted out of thinking by a thud in the distance."}
+      "You are jolted out of thinking by a thud in the distance.",
+      "A smoldering crate hits the ground with great force near you."}
 
    return possibilities[math.random(#possibilities)] --return a random lore sentence from possibilities
 end

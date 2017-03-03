@@ -17,9 +17,13 @@ local TIME_BETWEEN_DROP_MAX = 30 --default 30
 local DISTANCE_TO_CRATE = 30 --default 30
 
 ----------------
+script.on_event({defines.events.on_init},
+   function (e)
+      --this variable is used to pick a random time to drop a supply chest, and is recalculated with each drop.
+      global.random_time = global.random_time or (TIME_BETWEEN_DROP_MAX+TIME_BETWEEN_DROP_MIN)/2*math.pow(60,2)
+   end
+)
 
---this variable is used to pick a random time to drop a supply chest, and is recalculated with each drop.
-global.random_time = global.random_time or (TIME_BETWEEN_DROP_MAX+TIME_BETWEEN_DROP_MIN)/2*math.pow(60,2)
 
 script.on_event({defines.events.on_tick},
    function(e)

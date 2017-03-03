@@ -19,14 +19,13 @@ local DISTANCE_TO_CRATE = 30 --default 30
 ----------------
 
 --this variable is used to pick a random time to drop a supply chest, and is recalculated with each drop.
-local RANDOM_TIME = (TIME_BETWEEN_DROP_MAX+TIME_BETWEEN_DROP_MIN)/2*math.pow(60,2)
-
+global.random_time = global.random_time or (TIME_BETWEEN_DROP_MAX+TIME_BETWEEN_DROP_MIN)/2*math.pow(60,2)
 
 script.on_event({defines.events.on_tick},
    function(e)
-      if e.tick%RANDOM_TIME == 0 and e.tick ~= 0 then --run very infreqently, only when tick is evenly divisible by RANDOM_TIME
+      if e.tick%global.random_time == 0 and e.tick ~= 0 then --run very infreqently, only when tick is evenly divisible by global.random_time
 
-         RANDOM_TIME = math.random(TIME_BETWEEN_DROP_MIN*math.pow(60,2),TIME_BETWEEN_DROP_MAX*math.pow(60,2))
+         global.random_time = math.random(TIME_BETWEEN_DROP_MIN*math.pow(60,2),TIME_BETWEEN_DROP_MAX*math.pow(60,2))
 
          --count number of players on server, suprised there's no native way to know this
          local numOfPlayers = 1

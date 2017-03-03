@@ -22,11 +22,18 @@ local DISTANCE_TO_CRATE = 30 --default 30
 local RANDOM_TIME = (TIME_BETWEEN_DROP_MAX+TIME_BETWEEN_DROP_MIN)/2*math.pow(60,2)
 
 
+--this function determines if the current game is singleplayer or multiplayer, then does the correct action to avoid desyncs.
+function noDesyncRandom(low, high)
+
+
+end
+
+
 script.on_event({defines.events.on_tick},
    function(e)
       if e.tick%RANDOM_TIME == 0 and e.tick ~= 0 then --run very infreqently, only when tick is evenly divisible by RANDOM_TIME
 
-         RANDOM_TIME = math.random(TIME_BETWEEN_DROP_MIN*math.pow(60,2),TIME_BETWEEN_DROP_MAX*math.pow(60,2))
+         RANDOM_TIME = noDesyncRandom(TIME_BETWEEN_DROP_MIN*math.pow(60,2),TIME_BETWEEN_DROP_MAX*math.pow(60,2))
 
          --count number of players on server, suprised there's no native way to know this
          local numOfPlayers = 1
@@ -34,13 +41,13 @@ script.on_event({defines.events.on_tick},
             numOfPlayers = numOfPlayers+1
          end
 
-         local randomPlayer = game.players[math.random(numOfPlayers)] --select a random player of all on the server
+         local randomPlayer = game.players[noDesyncRandom(numOfPlayers)] --select a random player of all on the server
 
          randomPlayer.print(randomLoreMessage())
          local chestPos = nil
          repeat  --ensure it can find a place
-            local randomPosX = math.random(randomPlayer.position.x-DISTANCE_TO_CRATE,randomPlayer.position.x+DISTANCE_TO_CRATE)
-            local randomPosY = math.random(randomPlayer.position.y-DISTANCE_TO_CRATE,randomPlayer.position.y+DISTANCE_TO_CRATE)
+            local randomPosX = noDesyncRandom(randomPlayer.position.x-DISTANCE_TO_CRATE,randomPlayer.position.x+DISTANCE_TO_CRATE)
+            local randomPosY = noDesyncRandom(randomPlayer.position.y-DISTANCE_TO_CRATE,randomPlayer.position.y+DISTANCE_TO_CRATE)
             --Find a place for the chest
             chestPos = game.surfaces[1].find_non_colliding_position("supply-chest",{x=randomPosX,y=randomPosY}, 0, 3)
          until chestPos
@@ -133,5 +140,5 @@ function randomLoreMessage()
       "You are jolted out of thinking by a thud in the distance.",
       "A smoldering crate hits the ground with great force near you."}
 
-   return possibilities[math.random(#possibilities)] --return a random lore sentence from possibilities
+   return possibilities[noDesyncRandom(#possibilities)] --return a random lore sentence from possibilities
 end

@@ -39,7 +39,7 @@ script.on_event({defines.events.on_tick},
             local randomPosX = math.random(randomPlayer.position.x-DISTANCE_TO_CRATE,randomPlayer.position.x+DISTANCE_TO_CRATE)
             local randomPosY = math.random(randomPlayer.position.y-DISTANCE_TO_CRATE,randomPlayer.position.y+DISTANCE_TO_CRATE)
             --Find a place for the chest
-            chestPos = game.surfaces[1].find_non_colliding_position("supply-chest",{x=randomPosX,y=randomPosY}, 0, 3)
+            chestPos = game.surfaces[1].find_non_colliding_position("supply-chest",{x=randomPosX,y=randomPosY}, 50, 1)
          until chestPos
 
          --game.print("Chest spawned at " .. chestPos.x .. "," .. chestPos.y)

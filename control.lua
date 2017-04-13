@@ -22,35 +22,7 @@ script.on_event({defines.events.on_tick},
    function(e)
       global.random_time = global.random_time or (TIME_BETWEEN_DROP_MAX+TIME_BETWEEN_DROP_MIN)/2*math.pow(60,2)
       if e.tick%global.random_time == 0 and e.tick ~= 0 then --run very infreqently, only when tick is evenly divisible by global.random_time
-
-         global.random_time = math.random(TIME_BETWEEN_DROP_MIN*math.pow(60,2),TIME_BETWEEN_DROP_MAX*math.pow(60,2))
-
-         --count number of players on server, suprised there's no native way to know this
-         local numOfPlayers = 1
-         while game.players[numOfPlayers+1] ~= nil do
-            numOfPlayers = numOfPlayers+1
-         end
-
-         local randomPlayer = game.players[math.random(numOfPlayers)] --select a random player of all on the server
-
-         randomPlayer.print(randomLoreMessage())
-         local chestPos = nil
-         repeat  --ensure it can find a place
-            local randomPosX = math.random(randomPlayer.position.x-DISTANCE_TO_CRATE,randomPlayer.position.x+DISTANCE_TO_CRATE)
-            local randomPosY = math.random(randomPlayer.position.y-DISTANCE_TO_CRATE,randomPlayer.position.y+DISTANCE_TO_CRATE)
-            --Find a place for the chest
-            chestPos = game.surfaces[1].find_non_colliding_position("supply-chest",{x=randomPosX,y=randomPosY}, 50, 1)
-         until chestPos
-
-         --game.print("Chest spawned at " .. chestPos.x .. "," .. chestPos.y)
-
-         game.surfaces[1].create_entity{name="big-explosion",position=chestPos,force="neutral"} --create an explosion to simulate a landing
-         --spawn supply fire
-         game.surfaces[1].create_entity{name="supply-fire",position=chestPos,force="neutral"}
-
-         --create the chest
-         local chestEntity = game.surfaces[1].create_entity{name="supply-chest",position=chestPos,force="neutral"}
-
+         local chestEntity, randomPlayer = makeChest()
          if chestEntity then
             --fill chest with randomly selected items based on game stage
             if not randomPlayer.force.technologies["oil-processing"].researched then
@@ -66,11 +38,52 @@ script.on_event({defines.events.on_tick},
                --stage endgame, will have researched rocket silo
                fillChest(chestEntity, 4)
             end
+            global.random_time = math.random(TIME_BETWEEN_DROP_MIN*math.pow(60,2),TIME_BETWEEN_DROP_MAX*math.pow(60,2))
+         else
+            game.print("[Supply chest] Unable to find suitable player, deferring crate drop.")
+            --adjust the time down slightly, due to the failure
+            global.random_time = math.random(TIME_BETWEEN_DROP_MIN*math.pow(60,2),TIME_BETWEEN_DROP_MAX*math.pow(60,2))/1.3
          end
       end
    end
 )
 
+--This function evaluates all the players on the server, and if a compatible online player that is on the first surface is found,
+--It creates and returns the chest entity it made. Otherwise, returns nil.
+function makeChest()
+   --find a list of all players that are on the main surface
+   local validPlayers = {}
+   for index, player in pairs(game.connected_players) do
+      if player.surface == game.surfaces[1] then table.insert(validPlayers,player) end
+   end
+
+   if next(validPlayers) == nil then --no compatible players found
+      return nil
+   end
+
+   local randomPlayer = validPlayers[math.random(#validPlayers)] --select a random player of all valid on the server
+
+   randomPlayer.print(randomLoreMessage())
+   local chestPos = nil
+   repeat  --ensure it can find a place
+      local randomPosX = math.random(randomPlayer.position.x-DISTANCE_TO_CRATE,randomPlayer.position.x+DISTANCE_TO_CRATE)
+      local randomPosY = math.random(randomPlayer.position.y-DISTANCE_TO_CRATE,randomPlayer.position.y+DISTANCE_TO_CRATE)
+      --Find a place for the chest
+      chestPos = game.surfaces[1].find_non_colliding_position("supply-chest",{x=randomPosX,y=randomPosY}, 50, 1)
+   until chestPos
+
+   --game.print("Chest spawned at " .. chestPos.x .. "," .. chestPos.y)
+
+   game.surfaces[1].create_entity{name="big-explosion",position=chestPos,force="neutral"} --create an explosion to simulate a landing
+   --spawn supply fire
+   game.surfaces[1].create_entity{name="supply-fire",position=chestPos,force="neutral"}
+
+   --create the chest, return that and the player
+   return game.surfaces[1].create_entity{name="supply-chest",position=chestPos,force="neutral"}, randomPlayer
+
+end
+
+--This function evaluates the stage it's given, then fills the provided chest entity with items corresponding to stage.
 function fillChest(chestEntity, stage)
    local counter = 0 --used for while loop below, because you can't modify a for loop's control var in lua
    local itemToInsert = nil --used for testing duplication and adding to chest.
@@ -88,7 +101,7 @@ function fillChest(chestEntity, stage)
    end
 end
 
-
+--Returns a random string from possiblilites.
 function randomLoreMessage()
 
    local possibilities = {

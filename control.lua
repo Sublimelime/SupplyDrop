@@ -52,64 +52,42 @@ script.on_event({defines.events.on_tick},
          local chestEntity = game.surfaces[1].create_entity{name="supply-chest",position=chestPos,force="neutral"}
 
          if chestEntity then
-            local counter = 0
-            local itemToInsert = nil
-
             --fill chest with randomly selected items based on game stage
             if not randomPlayer.force.technologies["oil-processing"].researched then
                --stage one, has not researched oil
-               counter = 0 --used for while loop below, because you can't modify a for loop's control var in lua
-               local itemToInsert = nil --used for testing duplication and adding to chest.
-               while counter < ITEMS_PER_CHEST do --insert items from the stage one pool
-                  itemToInsert = stageOne()
-                  if chestEntity.get_item_count(itemToInsert.name) == 0 then --avoid duplication
-                     --game.print("Duplicate found of " .. itemToInsert.name)
-                     chestEntity.insert(itemToInsert)
-                     counter = counter+1
-                  end
-               end
+               fillChest(chestEntity, 1)
             elseif randomPlayer.force.technologies["oil-processing"].researched and not randomPlayer.force.technologies["advanced-oil-processing"].researched  then
-
                --stage two, will have researched oil, but not advanced oil processing
-               counter = 0 --used for while loop below, because you can't modify a for loop's control var in lua
-               itemToInsert = nil --used for testing duplication and adding to chest.
-               while counter < ITEMS_PER_CHEST do --insert items from the stage one pool
-                  itemToInsert = stageTwo()
-                  if chestEntity.get_item_count(itemToInsert.name) == 0 then --avoid duplication
-                     --game.print("Duplicate found of " .. itemToInsert.name)
-                     chestEntity.insert(itemToInsert)
-                     counter = counter+1
-                  end
-               end
+               fillChest(chestEntity, 2)
             elseif randomPlayer.force.technologies["advanced-oil-processing"].researched and not randomPlayer.force.technologies["rocket-silo"].researched then
                --stage three, will have researched advanced oil processing, but not silo
-               counter = 0 --used for while loop below, because you can't modify a for loop's control var in lua
-               itemToInsert = nil --used for testing duplication and adding to chest.
-               while counter < ITEMS_PER_CHEST do --insert items from the stage one pool
-                  itemToInsert = stageThree()
-                  if chestEntity.get_item_count(itemToInsert.name) == 0 then --avoid duplication
-                     --game.print("Duplicate found of " .. itemToInsert.name)
-                     chestEntity.insert(itemToInsert)
-                     counter = counter+1
-                  end
-               end
+               fillChest(chestEntity, 3)
             elseif randomPlayer.force.technologies["rocket-silo"].researched then
                --stage endgame, will have researched rocket silo
-               counter = 0 --used for while loop below, because you can't modify a for loop's control var in lua
-               itemToInsert = nil --used for testing duplication and adding to chest.
-               while counter < ITEMS_PER_CHEST do --insert items from the stage one pool
-                  itemToInsert = endGame()
-                  if chestEntity.get_item_count(itemToInsert.name) == 0 then --avoid duplication
-                     --game.print("Duplicate found of " .. itemToInsert.name)
-                     chestEntity.insert(itemToInsert)
-                     counter = counter+1
-                  end
-               end
+               fillChest(chestEntity, 4)
             end
          end
       end
    end
 )
+
+function fillChest(chestEntity, stage)
+   local counter = 0 --used for while loop below, because you can't modify a for loop's control var in lua
+   local itemToInsert = nil --used for testing duplication and adding to chest.
+   while counter < ITEMS_PER_CHEST do
+      if stage == 1 then itemToInsert = stageOne()
+      elseif stage == 2 then itemToInsert = stageTwo()
+      elseif stage == 3 then itemToInsert = stageThree()
+      elseif stage == 4 then itemToInsert = endGame() end
+
+      if chestEntity.get_item_count(itemToInsert.name) == 0 then --avoid duplication
+         --game.print("Duplicate found of " .. itemToInsert.name)
+         chestEntity.insert(itemToInsert)
+         counter = counter+1
+      end
+   end
+end
+
 
 function randomLoreMessage()
 

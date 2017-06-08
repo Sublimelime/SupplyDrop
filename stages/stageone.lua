@@ -51,6 +51,7 @@ function stageOne()
       {name="sulfur",count=math.random(10,50)},
       {name="transport-belt",count=math.random(50,200)},
       {name="underground-belt",count=math.random(10,20)},
+
    }
 
    return possibilities[math.random(#possibilities)] --return a random loot from the table above

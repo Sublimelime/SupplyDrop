@@ -10,7 +10,8 @@ function endGame()
 
       {name="accumulator",count=math.random(10,20)},
       {name="advanced-circuit",count=math.random(100,150)},
-      {name="alien-science-pack",count=math.random(50,100)},
+      {name="production-science-pack",count=math.random(50,100)},
+      {name="high-tech-science-pack",count=math.random(50,100)},
       {name="assembling-machine-2",count=math.random(10,15)},
       {name="assembling-machine-3",count=math.random(10,15)},
       {name="cluster-grenade",count=math.random(20,30)},

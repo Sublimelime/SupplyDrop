@@ -3,6 +3,8 @@ require("stages.stagetwo")
 require("stages.stagethree")
 require("stages.endgame")
 
+local DEBUG = false --used for debug, do not enable unless you like chat spam
+
 script.on_event({defines.events.on_tick},
    function(e)
       global.random_time = global.random_time or (settings.global["supply-drop-time-between-drop-max"].value+settings.global["supply-drop-time-between-drop-min"].value)/2*math.pow(60,2)
@@ -39,10 +41,13 @@ function makeChest()
    --find a list of all players that are on the main surface
    local validPlayers = {}
    for index, player in pairs(game.connected_players) do
-      if player.surface == game.surfaces[1] then table.insert(validPlayers,player) end
+      if player.surface == game.surfaces[1] and player.force.technologies["oil-processing"].researched then table.insert(validPlayers,player) end
    end
 
    if next(validPlayers) == nil then --no compatible players found
+      if DEBUG == true then
+         game.print("[Supply-Drop] Could not find a valid player to preform drop on. Aborting.")
+      end
       return nil
    end
 
@@ -57,7 +62,9 @@ function makeChest()
       chestPos = game.surfaces[1].find_non_colliding_position("supply-chest",{x=randomPosX,y=randomPosY}, 50, 1)
    until chestPos
 
-   --game.print("Chest spawned at " .. chestPos.x .. "," .. chestPos.y)
+   if DEBUG == true then
+      game.print("[Supply-Drop] Chest spawned at " .. chestPos.x .. "," .. chestPos.y)
+   end
 
    game.surfaces[1].create_entity{name="big-explosion",position=chestPos,force="neutral"} --create an explosion to simulate a landing
    --spawn supply fire
@@ -79,7 +86,10 @@ function fillChest(chestEntity, stage)
       elseif stage == 4 then itemToInsert = endGame() end
 
       if chestEntity.get_item_count(itemToInsert.name) == 0 then --avoid duplication
-         --game.print("Duplicate found of " .. itemToInsert.name)
+         if DEBUG then
+            game.print("Duplicate found of " .. itemToInsert.name)
+         end
+
          chestEntity.insert(itemToInsert)
          counter = counter+1
       end

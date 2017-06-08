@@ -47,7 +47,7 @@ function stageOne()
       {name="steel-plate",count=math.random(50,100)},
       {name="stone-furnace",count=math.random(5,10)},
       {name="storage-tank",count=math.random(1,5)},
-      {name="straight-rail",count=math.random(50,150)},
+      {name="rail",count=math.random(50,150)},
       {name="sulfur",count=math.random(10,50)},
       {name="transport-belt",count=math.random(50,200)},
       {name="underground-belt",count=math.random(10,20)},

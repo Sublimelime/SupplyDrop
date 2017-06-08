@@ -1,55 +1,41 @@
+require("stages.stageone")
+
 function stageTwo()
 
-   --[[
-      This stage is from researching oil processing until the player has researched advanced oil processing. This should encompass red, green and some blue science.
-      If you'd like to modify the loot table, just modify possibilities below.
-      Do note that there is anti-duplication checking, so putting multiple entries of the same item only increases the initial probability,
-      all further inserts are blocked.
-   --]]
-
    local possibilities = {
-
-      {name="accumulator",count=math.random(1,5)},
-      {name="assembling-machine-2",count=math.random(1,5)},
-      {name="coal",count=math.random(200,300)},
-      {name="copper-plate",count=math.random(200,300)},
-      {name="defender-capsule",count=math.random(10,50)},
-      {name="electronic-circuit",count=math.random(100,200)},
-      {name="fast-inserter",count=math.random(15,25)},
-      {name="fast-splitter",count=math.random(5,10)},
-      {name="fast-transport-belt",count=math.random(50,100)},
-      {name="fast-underground-belt",count=4},
-      {name="green-wire",count=math.random(10,50)},
-      {name="grenade",count=math.random(5,10)},
-      {name="heavy-armor",count=1},
-      {name="inserter",count=math.random(20,30)},
-      {name="iron-plate",count=math.random(200,300)},
-      {name="lab",count=math.random(1,5)},
-      {name="piercing-rounds-magazine",count=math.random(5,30)},
-      {name="power-armor",count=1},
-      {name="rail",count=math.random(50,150)},
-      {name="red-wire",count=math.random(10,50)},
-      {name="repair-pack",count=math.random(5,10)},
-      {name="science-pack-1",count=math.random(5,50)},
-      {name="science-pack-2",count=math.random(5,50)},
-      {name="science-pack-3",count=math.random(5,20)},
-      {name="shotgun",count=1},
-      {name="shotgun-shell",count=math.random(5,30)},
-      {name="small-lamp",count=math.random(5,10)},
-      {name="splitter",count=math.random(10,15)},
-      {name="steam-engine",count=math.random(5,10)},
-      {name="steel-axe",count=1},
-      {name="steel-chest",count=math.random(1,5)},
-      {name="steel-furnace",count=math.random(5,15)},
-      {name="steel-plate",count=math.random(70,150)},
-      {name="stone-brick",count=math.random(50,100)},
-      {name="stone-wall",count=math.random(20,50)},
-      {name="submachine-gun",count=1},
-      {name="transport-belt",count=math.random(100,200)},
-      {name="underground-belt",count=6},
-      {name="electric-mining-drill",count=math.random(5,15)},
-
+      {name="advanced-circuit",count=math.random(50,100)},
+      {name="battery",count=math.random(10,30)},
+      {name="big-electric-pole",count=math.random(10,20)},
+      {name="car",count=math.random(1,1)},
+      {name="chemical-plant",count=math.random(1,5)},
+      {name="coal",count=math.random(100,200)},
+      {name="construction-robot",count=math.random(5,10)},
+      {name="copper-plate",count=math.random(150,300)},
+      {name="crude-oil-barrel",count=math.random(1,5)},
+      {name="efficiency-module",count=math.random(1,5)},
+      {name="electric-engine-unit",count=math.random(10,30)},
+      {name="fluid-wagon",count=math.random(1,2)},
+      {name="heavy-oil-barrel",count=math.random(1,5)},
+      {name="iron-plate",count=math.random(150,300)},
+      {name="light-oil-barrel",count=math.random(1,5)},
+      {name="logistic-robot",count=math.random(5,10)},
+      {name="lubricant-barrel",count=math.random(1,5)},
+      {name="medium-electric-pole",count=math.random(20,50)},
+      {name="modular-armor",count=math.random(1,2)},
+      {name="oil-refinery",count=math.random(10,15)},
+      {name="petroleum-gas-barrel",count=math.random(1,5)},
+      {name="productivity-module",count=math.random(1,5)},
+      {name="roboport",count=math.random(1,5)},
+      {name="solid-fuel",count=math.random(50,100)},
+      {name="speed-module",count=math.random(1,5)},
+      {name="steel-plate",count=math.random(100,200)},
+      {name="substation",count=math.random(1,5)},
+      {name="tank",count=math.random(1,1)},
    }
-
-   return possibilities[math.random(#possibilities)] --return a random loot from the table above
+   -- inherits the previous loot table, 50% chance
+   if math.random(4) > 2  then
+      return possibilities[math.random(#possibilities)] --return a random loot from the table above
+   else
+      return stageOne()
+   end
 end

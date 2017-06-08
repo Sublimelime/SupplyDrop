@@ -3,24 +3,9 @@ require("stages.stagetwo")
 require("stages.stagethree")
 require("stages.endgame")
 
-
---- USER CONFIG
-
--- Change this to change how many rolls the loot generator makes per chest, aka how many unique items.
-local ITEMS_PER_CHEST = 5 --default 5
-
--- Change these two variables to change how much time between each crate in minutes.
-local TIME_BETWEEN_DROP_MIN = 10 --default 10
-local TIME_BETWEEN_DROP_MAX = 30 --default 30
-
--- Change this to change how far away at max distance from the selected player the crate is allowed to drop.
-local DISTANCE_TO_CRATE = 30 --default 30
-
-----------------
-
 script.on_event({defines.events.on_tick},
    function(e)
-      global.random_time = global.random_time or (TIME_BETWEEN_DROP_MAX+TIME_BETWEEN_DROP_MIN)/2*math.pow(60,2)
+      global.random_time = global.random_time or (settings.global["supply-drop-time-between-drop-max"].value+settings.global["supply-drop-time-between-drop-min"].value)/2*math.pow(60,2)
       if e.tick%global.random_time == 0 and e.tick ~= 0 then --run very infreqently, only when tick is evenly divisible by global.random_time
          local chestEntity, randomPlayer = makeChest()
          if chestEntity then
@@ -38,11 +23,11 @@ script.on_event({defines.events.on_tick},
                --stage endgame, will have researched rocket silo
                fillChest(chestEntity, 4)
             end
-            global.random_time = math.random(TIME_BETWEEN_DROP_MIN*math.pow(60,2),TIME_BETWEEN_DROP_MAX*math.pow(60,2))
+            global.random_time = math.random(settings.global["supply-drop-time-between-drop-min"].value*math.pow(60,2),settings.global["supply-drop-time-between-drop-max"].value*math.pow(60,2))
          else
             game.print("[Supply chest] Unable to find suitable player, deferring crate drop.")
             --adjust the time down slightly, due to the failure
-            global.random_time = math.random(TIME_BETWEEN_DROP_MIN*math.pow(60,2),TIME_BETWEEN_DROP_MAX*math.pow(60,2))/1.3
+            global.random_time = math.random(settings.global["supply-drop-time-between-drop-min"].value*math.pow(60,2),settings.global["supply-drop-time-between-drop-max"].value*math.pow(60,2))/1.3
          end
       end
    end
@@ -66,8 +51,8 @@ function makeChest()
    randomPlayer.print(randomLoreMessage())
    local chestPos = nil
    repeat  --ensure it can find a place
-      local randomPosX = math.random(randomPlayer.position.x-DISTANCE_TO_CRATE,randomPlayer.position.x+DISTANCE_TO_CRATE)
-      local randomPosY = math.random(randomPlayer.position.y-DISTANCE_TO_CRATE,randomPlayer.position.y+DISTANCE_TO_CRATE)
+      local randomPosX = math.random(randomPlayer.position.x-settings.global["supply-drop-distance-to-crate"].value,randomPlayer.position.x+settings.global["supply-drop-distance-to-crate"].value)
+      local randomPosY = math.random(randomPlayer.position.y-settings.global["supply-drop-distance-to-crate"].value,randomPlayer.position.y+settings.global["supply-drop-distance-to-crate"].value)
       --Find a place for the chest
       chestPos = game.surfaces[1].find_non_colliding_position("supply-chest",{x=randomPosX,y=randomPosY}, 50, 1)
    until chestPos
@@ -87,7 +72,7 @@ end
 function fillChest(chestEntity, stage)
    local counter = 0 --used for while loop below, because you can't modify a for loop's control var in lua
    local itemToInsert = nil --used for testing duplication and adding to chest.
-   while counter < ITEMS_PER_CHEST do
+   while counter < settings.global["supply-drop-items-per-chest"].value do
       if stage == 1 then itemToInsert = stageOne()
       elseif stage == 2 then itemToInsert = stageTwo()
       elseif stage == 3 then itemToInsert = stageThree()

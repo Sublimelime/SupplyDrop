@@ -10,14 +10,14 @@ script.on_event({defines.events.on_tick},
          local chestEntity, randomPlayer = makeChest()
          if chestEntity then
             --fill chest with randomly selected items based on game stage
-            if not randomPlayer.force.technologies["oil-processing"].researched then
-               --stage one, has not researched oil
+            if not randomPlayer.force.technologies["advanced-oil-processing"].researched then
+               --stage one, has not researched advanced oil processing
                fillChest(chestEntity, 1)
-            elseif randomPlayer.force.technologies["oil-processing"].researched and not randomPlayer.force.technologies["advanced-oil-processing"].researched  then
-               --stage two, will have researched oil, but not advanced oil processing
+            elseif randomPlayer.force.technologies["advanced-oil-processing"].researched and not randomPlayer.force.technologies["nuclear-fuel-reprocessing"].researched  then
+               --stage two, will have researched advanced oil processing, but not nuclear fuel reprocessing
                fillChest(chestEntity, 2)
-            elseif randomPlayer.force.technologies["advanced-oil-processing"].researched and not randomPlayer.force.technologies["rocket-silo"].researched then
-               --stage three, will have researched advanced oil processing, but not silo
+            elseif randomPlayer.force.technologies["nuclear-fuel-reprocessing"].researched and not randomPlayer.force.technologies["rocket-silo"].researched then
+               --stage three, will have researched nuclear fuel repo, but not silo
                fillChest(chestEntity, 3)
             elseif randomPlayer.force.technologies["rocket-silo"].researched then
                --stage endgame, will have researched rocket silo

@@ -22,7 +22,7 @@ function stageOne()
       {name="heavy-armor",count=math.random(1,2)},
       {name="inserter",count=math.random(10,20)},
       {name="iron-axe",count=math.random(1,3)},
-      {name="iron-gear",count=math.random(100,150)},
+      {name="iron-gear-wheel",count=math.random(100,150)},
       {name="iron-plate",count=math.random(100,200)},
       {name="lamp",count=math.random(5,20)},
       {name="landfill",count=math.random(20,50)},

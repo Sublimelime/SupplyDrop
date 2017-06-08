@@ -9,31 +9,40 @@ script.on_event({defines.events.on_tick},
    function(e)
       global.random_time = global.random_time or (settings.global["supply-drop-time-between-drop-max"].value+settings.global["supply-drop-time-between-drop-min"].value)/2*math.pow(60,2)
       if e.tick%global.random_time == 0 and e.tick ~= 0 then --run very infreqently, only when tick is evenly divisible by global.random_time
-         local chestEntity, randomPlayer = makeChest()
-         if chestEntity then
-            --fill chest with randomly selected items based on game stage
-            if not randomPlayer.force.technologies["advanced-oil-processing"].researched then
-               --stage one, has not researched advanced oil processing
-               fillChest(chestEntity, 1)
-            elseif randomPlayer.force.technologies["advanced-oil-processing"].researched and not randomPlayer.force.technologies["nuclear-fuel-reprocessing"].researched  then
-               --stage two, will have researched advanced oil processing, but not nuclear fuel reprocessing
-               fillChest(chestEntity, 2)
-            elseif randomPlayer.force.technologies["nuclear-fuel-reprocessing"].researched and not randomPlayer.force.technologies["rocket-silo"].researched then
-               --stage three, will have researched nuclear fuel repo, but not silo
-               fillChest(chestEntity, 3)
-            elseif randomPlayer.force.technologies["rocket-silo"].researched then
-               --stage endgame, will have researched rocket silo
-               fillChest(chestEntity, 4)
-            end
-            global.random_time = math.random(settings.global["supply-drop-time-between-drop-min"].value*math.pow(60,2),settings.global["supply-drop-time-between-drop-max"].value*math.pow(60,2))
-         else
-            game.print("[Supply chest] Unable to find suitable player, deferring crate drop.")
-            --adjust the time down slightly, due to the failure
-            global.random_time = math.random(settings.global["supply-drop-time-between-drop-min"].value*math.pow(60,2),settings.global["supply-drop-time-between-drop-max"].value*math.pow(60,2))/1.3
-         end
+         doChestSpawn()
       end
    end
 )
+
+--Runs the entire operation of a crate drop
+function doChestSpawn()
+   local chestEntity, randomPlayer = makeChest()
+   if chestEntity then
+      --fill chest with randomly selected items based on game stage
+      if not randomPlayer.force.technologies["advanced-oil-processing"].researched then
+         --stage one, has not researched advanced oil processing
+         fillChest(chestEntity, 1)
+      elseif randomPlayer.force.technologies["advanced-oil-processing"].researched and not randomPlayer.force.technologies["nuclear-fuel-reprocessing"].researched  then
+         --stage two, will have researched advanced oil processing, but not nuclear fuel reprocessing
+         fillChest(chestEntity, 2)
+      elseif randomPlayer.force.technologies["nuclear-fuel-reprocessing"].researched and not randomPlayer.force.technologies["rocket-silo"].researched then
+         --stage three, will have researched nuclear fuel repo, but not silo
+         fillChest(chestEntity, 3)
+      elseif randomPlayer.force.technologies["rocket-silo"].researched then
+         --stage endgame, will have researched rocket silo
+         fillChest(chestEntity, 4)
+      end
+      global.random_time = math.random(settings.global["supply-drop-time-between-drop-min"].value*math.pow(60,2),settings.global["supply-drop-time-between-drop-max"].value*math.pow(60,2))
+   else --a chest wasn't spawned
+      if DEBUG then
+         game.print("[Supply-Drop] Unable to find suitable player, deferring crate drop.")
+      end
+
+      --adjust the time down slightly, due to the failure
+      global.random_time = math.random(settings.global["supply-drop-time-between-drop-min"].value*math.pow(60,2),settings.global["supply-drop-time-between-drop-max"].value*math.pow(60,2))/1.3
+   end
+end
+
 
 --This function evaluates all the players on the server, and if a compatible online player that is on the first surface is found,
 --It creates and returns the chest entity it made. Otherwise, returns nil.
@@ -117,4 +126,8 @@ function randomLoreMessage()
       "A smoldering crate hits the ground with great force near you."}
 
    return possibilities[math.random(#possibilities)] --return a random lore sentence from possibilities
+end
+
+if DEBUG then
+   commands.add_command("make-chest","Creates a chest on demand, only usable when debug is true", doChestSpawn)
 end

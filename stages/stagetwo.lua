@@ -12,7 +12,7 @@ function stageTwo()
       {name="construction-robot",count=math.random(5,10)},
       {name="copper-plate",count=math.random(150,300)},
       {name="crude-oil-barrel",count=math.random(1,5)},
-      {name="efficiency-module",count=math.random(1,5)},
+      {name="effectivity-module",count=math.random(1,5)},
       {name="electric-engine-unit",count=math.random(10,30)},
       {name="fluid-wagon",count=math.random(1,2)},
       {name="heavy-oil-barrel",count=math.random(1,5)},
